@@ -6,6 +6,7 @@ Homework 2b
 import random
 import math
 
+#city class for TSP problem
 class City:
         def __init__(self,nr,x,y):
                 self.nr=nr;
@@ -19,6 +20,7 @@ class City:
         def getY(self):
                 return self.y;
         
+        #get euclidian dist from one city to another
         def distanceTo(self,city):
                 xdist = abs(self.getX()-city.getX());
                 ydist = abs(self.getY()-city.getY());
@@ -36,6 +38,7 @@ class TSP:
                 self.l=l
                 self.outputFileName=file.split('.')[0]+".out"
 
+        #print only indexes as solution
         def toString(self,tour):
                 string=''
                 for i in range(0,self.n):
@@ -43,11 +46,13 @@ class TSP:
                 string = string+"\n"
                 return string
 
+        #generate solution by shuffle initial list
         def generateRandom(self):
                 tour = self.l[:]
                 random.shuffle(tour)
                 return tour;
 
+        #get city by index 
         def getCity(self,index):
                 for i in range(0,self.n):
                         if(self.l[i].getNr()==index):
@@ -100,14 +105,20 @@ class TSP:
                 bestsol=self.sa(T,alpha,minT,nrit)
                 bestd=self.getTourDistance(bestsol)
                 sumd=bestd
+                #add first solution in table
                 with open(self.outputFileName,"a") as f:
                                 f.write("|%d\t\t|%d\t|%d\t\t|%d\t\t\t|\n"% (1,self.getTourDistance(bestsol),bestd,sumd))
+                #generate another n-1 sol and store avg/best sol
                 for i in range(0,n-1):
+                        #get solution from sa algorithm
                         x=self.sa(T,alpha,minT,nrit)
+                        #store sum of distance to compute avg
                         sumd=sumd+self.getTourDistance(x);
+                        #store best sol
                         if self.getTourDistance(x)<bestd:
                                 bestd=self.getTourDistance(x)
                                 bestsol=x[:];
+                        #append sol to table
                         with open(self.outputFileName,"a") as f:
                                 f.write("|%d\t\t|%d\t|%d\t\t|%d\t\t\t|\n"% (i+2,self.getTourDistance(x),bestd,sumd/(i+2)))
                 with open(self.outputFileName,"a") as f:
@@ -136,16 +147,20 @@ def main():
         f.readline()
         f.readline()
         f.readline()
+        #read nr of cities
         n=int(f.readline().split()[2])
         f.readline()
         f.readline()
+        #for each city store index, x pos and y pos
         for i in range(0,n):
                 line=f.readline()
                 s=line.rstrip().split()
                 s=list(map(int, s))
                 c=City(s[0],s[1],s[2])
                 l.append(c)
+        #make new instance of problem
         tsp = TSP(file,n,l);
+        #empty file
         open(tsp.outputFileName,"w").close()
         
         #tsp.write_table_header(10000,0.9,1,10);
